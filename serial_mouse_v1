@@ -1,0 +1,66 @@
+from pynput.keyboard import Key, Listener
+import pyautogui
+import serial
+import keyboard
+
+
+comport, baudrate = 'COM4',115200
+
+d1 = {'x':100,
+        'y':10,
+        'duration':0.1,
+        'enbl':False,
+        'loop':True
+        }
+
+def dis(*a):
+    d1['loop'] = False
+
+def data_sp(s):
+    a = []
+    for i in str(s).split():
+        try:
+            a.append(float(i))
+        except:
+            pass
+    return a
+dist = 0.1
+def mov_mouse(x1,x2,t):
+    dx = abs(x1-x2)
+    if dx > 10:
+        if x1-x2 > 0:
+            dir = 1
+        else:
+            dir = -1
+        print(t,dx)
+        if t =='x':
+            pyautogui.moveRel(xOffset=dist*dir,duration=2)
+        elif t =='y':
+            pyautogui.moveRel(yOffset=dist*dir,duration=2)
+
+def main(comport, baudrate):
+    prev = []
+    curr = []
+
+    ser = serial.Serial(comport, baudrate, timeout=0.1)         # 1/timeout is the frequency at which the port is read
+    while d1['loop']:
+        data = ser.readline().decode().strip()
+        if data:
+            
+            curr = data_sp(data)
+            try:
+                mov_mouse(curr[3],prev[3],'x')
+                mov_mouse(curr[4],prev[4],'y')
+            except:
+                pass
+            prev = curr
+            
+        keyboard.on_press_key('`',dis)
+
+
+if __name__ == '__main__':
+
+    main('COM4', 115200)
+    
+
+
