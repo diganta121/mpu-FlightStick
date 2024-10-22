@@ -1,20 +1,25 @@
-from pynput.keyboard import Key, Listener
 import pyautogui
 import serial
 import keyboard
 import math
+import time
 
-comport, baudrate = 'COM4',115200
-
-d1 = {'x':100,
-        'y':10,
+d1 = {'x_off':0,
+        'y_off':60,
+        'correct_state':False,
         'duration':0.1,
-        'enbl':False,
+        'enbl':True,
         'loop':True
         }
 
-def dis(*a):
+def disable(*_):
     d1['loop'] = False
+
+def disable_soft(*_):
+    d1['enbl'] != d1['enbl']
+
+def correct_off_state(*_):
+    d1['correct_state'] = True
 
 def data_sp(s):
     a = []
@@ -22,10 +27,10 @@ def data_sp(s):
         try:
             a.append(float(i))
         except:
-            pass
+            return
     return a
 dist = 0.1
-def mov_mouse(x1,x2,t,lim):
+def mouse_x(x1,x2,t,lim):
     dx = abs(x1-x2)
     if dx > lim:
         if x1-x2 > 0:
@@ -33,39 +38,59 @@ def mov_mouse(x1,x2,t,lim):
         else:
             dir = -1
         print(t,dx)
-        if t =='x':
-            pyautogui.moveRel(xOffset=dist*dir,duration=2)
-        elif t =='y':
-            pyautogui.moveRel(yOffset=dist*dir,duration=2)
+        return 1*dir
 
 lim = 0.1
 MX = 0.188349
-def mov_mousex2(x1,x2,t):
+def mouse_x2(x1,x2):
     x = MX*x1
     if abs(x1-x2) > lim:
-        pyautogui.move(xOffset=x,duration=2)
-def main(comport, baudrate):
-    prev = []
-    curr = []
+        return x
 
-    ser = serial.Serial(comport, baudrate, timeout=0.1)         # 1/timeout is the frequency at which the port is read
+def mouse_x3(x_val,x1,x2,y1,y2):
+    # -80 , 80 , 0 , 1920
+    return y1 + (x_val - x1) * (y2 - y1) / (x2 - x1)
+
+
+def main(comport, baudrate):
+    curr = []
+    prev = []
+    temp = False
+    ser = serial.Serial(comport, baudrate)         
+    # 1/timeout is the frequency at which the port is read 
+    keyboard.add_hotkey('`',disable)
+    keyboard.add_hotkey('/',disable_soft)
+    keyboard.add_hotkey('*',correct_off_state)
     while d1['loop']:
         data = ser.readline().decode().strip()
-        if data:
-            
+        if data and d1['enbl']:
             curr = data_sp(data)
             try:
-                mov_mouse(curr[3],prev[3],'x')
-                mov_mouse(curr[4],prev[4],'y')
+                x = mouse_x3(curr[3],-90,90,0,1920) - d1['x_off']
+                y = mouse_x3(curr[4],-90,90,0,1080) - d1['y_off']
+                if d1['correct_state']:
+                    if temp:
+                        d1['x_off'] = x - prev[0]
+                        d1['y_off'] = y - prev[1]
+                        prev.clear()
+                        temp = False
+                        d1['correct_state'] = False
+                        print(d1)
+                    else:
+                        prev = [x, y]
+                        temp = True
+                        time.sleep(1)
+                        continue
+
+                print(f"{x:.2f} {y:.2f}")
+                
+                pyautogui.moveTo(x=x,y=y, duration=0.05)
             except:
                 pass
-            prev = curr
             
-        keyboard.on_press_key('`',dis)
-
+        
 
 if __name__ == '__main__':
-
     main('COM4', 115200)
     
 

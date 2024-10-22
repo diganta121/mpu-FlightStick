@@ -14,7 +14,7 @@ def show(key):
         data['enbl'] = not data['enbl']
         print(data['enbl'])
     if data['enbl']: 
-        # if space is pressed press w 
+        # if space is pressed press w w
         # for testing
         if key == Key.space:
             pyautogui.press('w')

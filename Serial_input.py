@@ -8,8 +8,12 @@ def readserial(comport, baudrate):
     while True:
         data = ser.readline().decode().strip()
         if data:
-            print(data)
-
+            
+            try:
+                data = data.split()
+                print(f"{float(data[0]):.2f} {float(data[1]):.2f} {data[2]} {data[3]} ")
+            except:
+                print(data)
 
 if __name__ == '__main__':
 
