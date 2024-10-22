@@ -25,9 +25,9 @@ def data_sp(s):
             pass
     return a
 dist = 0.1
-def mov_mouse(x1,x2,t):
+def mov_mouse(x1,x2,t,lim):
     dx = abs(x1-x2)
-    if dx > 10:
+    if dx > lim:
         if x1-x2 > 0:
             dir = 1
         else:
@@ -37,7 +37,18 @@ def mov_mouse(x1,x2,t):
             pyautogui.moveRel(xOffset=dist*dir,duration=2)
         elif t =='y':
             pyautogui.moveRel(yOffset=dist*dir,duration=2)
-
+def mov_mouse2(x1,x2,t,lim):
+    dx = math.sin(x1)
+    if dx > lim:
+        if x1-x2 > 0:
+            dir = 1
+        else:
+            dir = -1
+        print(t,dx)
+        if t =='x':
+            pyautogui.moveRel(xOffset=dist*dir,duration=2)
+        elif t =='y':
+            pyautogui.moveRel(yOffset=dist*dir,duration=2)
 def main(comport, baudrate):
     prev = []
     curr = []
