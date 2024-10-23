@@ -4,9 +4,10 @@ import keyboard
 import math
 import time
 
-d1 = {'x_off':0,
-        'y_off':-275.22,
+d1 = {'x_off':10,
+        'y_off':-200,
         'correct_state':False,
+        'precise':False,
         'duration':0.1,
         'enbl':True,
         'loop':True
@@ -20,7 +21,8 @@ def disable_soft(*_):
 
 def correct_off_state(*_):
     d1['correct_state'] = True
-
+def precise_state():
+    d1['precise'] = not d1['precise']
 def data_sp(s):
     a = []
     for i in str(s).split():
@@ -60,18 +62,25 @@ def main(comport, baudrate):
     curr = []
     prev = []
     temp = -1
-    ser = serial.Serial(comport, baudrate)         
+    ser = serial.Serial(comport, baudrate,timeout=0.2)         
     # 1/timeout is the frequency at which the port is read 
     keyboard.add_hotkey('`',disable)
     keyboard.add_hotkey('/',disable_soft)
     keyboard.add_hotkey('*',correct_off_state)
+    keyboard.add_hotkey('.',precise_state)
     while d1['loop']:
+        s1 = time.time_ns()
         data = ser.readline().decode().strip()
         if data and d1['enbl']:
             curr = data_sp(data)
             try:
-                x = mouse_x3(curr[3],-85,85,0,1920) - d1['x_off']
-                y = mouse_x3(curr[4],-80,75,0,1080) - d1['y_off']
+                x_angle = (curr[0] - curr[2])/2
+                y_angle = (curr[1] + curr[3])/2
+                x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
+                y = (mouse_x3(y_angle,40,-40,0,1080)) - d1['y_off']
+                if d1['precise']:
+                    x /= 2
+                    y /= 2
                 if d1['correct_state']:
                     if temp == 0:
                         d1['x_off'] = x - prev[0]
@@ -88,11 +97,13 @@ def main(comport, baudrate):
                     else:
                         temp -= 1
                         continue
-
+                
                 #print(f"{x:.2f} {y:.2f}")
-                pyautogui.moveTo(x=x,y=y, duration=0.05)
+                pyautogui.moveTo(x=x,y=y, duration=0)
+                prev = curr
             except:
                 pass
+            print(time.time_ns()-s1)
             
         
 

@@ -11,7 +11,7 @@ def readserial(comport, baudrate):
             
             try:
                 data = data.split()
-                print(f"{float(data[0]):.2f} {float(data[1]):.2f} {data[2]} {data[3]} ")
+                print(f"{float(data[0]):.2f} {float(data[1]):.2f} {data[2]} {data[3]} {data[4]}")
             except:
                 print(data)
 

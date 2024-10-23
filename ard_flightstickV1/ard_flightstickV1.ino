@@ -47,7 +47,6 @@ void setup() {
   delay(1000);
   myMPU9250.autoOffsets();
   Serial.println("Done!");
-  
   /*  This is a more accurate method for calibration. You have to determine the minimum and maximum 
    *  raw acceleration values of the axes determined in the range +/- 2 g. 
    *  You call the function as follows: setAccOffsets(xMin,xMax,yMin,yMax,zMin,zMax);
@@ -60,7 +59,9 @@ void setup() {
    *  It can only be applied if the corresponding DLPF is enabled and 0<DLPF<7!
    *  Divider is a number 0...255
    */
-  myMPU9250.setSampleRateDivider(5);
+  myMPU9250.enableFifo(false);
+
+  myMPU9250.setSampleRateDivider(50);
 
   /*  MPU9250_ACC_RANGE_2G      2 g    (default)
    *  MPU9250_ACC_RANGE_4G      4 g
@@ -73,7 +74,6 @@ void setup() {
    *  If disabled the bandwidth is 1.13 kHz, delay is 0.75 ms, output rate is 4 kHz
    */
   myMPU9250.enableAccDLPF(true);
-
 
   /*  Digital low pass filter (DLPF) for the accelerometer, if enabled 
    *  MPU9250_DPLF_0, MPU9250_DPLF_2, ...... MPU9250_DPLF_7 
@@ -101,22 +101,17 @@ void loop() {
   Serial.print(" ");
   Serial.print(angles.y);
   Serial.print(" ");
-  Serial.print(angles.z);
-  Serial.print(" ");
 
 /* Pitch and roll consider all axes for calculation. According to my experience
    it provides more reliable results at higher angles (>60°) */
   float pitch = myMPU9250.getPitch();
   float roll  = myMPU9250.getRoll();
   
-  
   Serial.print(pitch); 
   Serial.print(" ");
-
   Serial.print(roll); 
-  
   Serial.println();
   
-  delay(100);
+  delay(102);
   
 }
