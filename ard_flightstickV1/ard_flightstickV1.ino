@@ -89,8 +89,8 @@ void setup() {
    */
   myMPU9250.setAccDLPF(MPU9250_DLPF_6);  
 }
-float[2] prev;
-float[2] curr;
+float prev[2];
+float curr[2];
 
 void loop() {
   xyzFloat angles = myMPU9250.getAngles();
@@ -98,11 +98,10 @@ void loop() {
 /* This method provides quite precise values for x/y 
    angles up 60°. */
   //Serial.print(" x ");Serial.print(" y ");Serial.print(" z ");Serial.print(" Pitch");Serial.println(" Roll");
-  curr ={angles.x, angles.y};
-  Serial.print(curr);
-  Serial.print(' ');
+  curr[0] = angles.x;
+  curr[1] = angles.y;
   float diff[2] = {curr[0]-prev[0],curr[1]-prev[1]};
-  Serial.println(diff);
+  Serial.print("%f %f %f",curr[0],curr[1]);
   
   prev = curr;
 /* Pitch and roll consider all axes for calculation. According to my experience

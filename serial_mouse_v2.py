@@ -4,8 +4,10 @@ import keyboard
 import math
 import time
 import threading
+import Serial_input as _SI
 comport = 'COM4'
 baudrate = 115200
+
 d1 = {'x_off':10,
         'y_off':-200,
         'correct_state':False,
@@ -34,22 +36,6 @@ def data_sp(s):
             return
     return a
 dist = 0.1
-def mouse_x(x1,x2,t,lim):
-    dx = abs(x1-x2)
-    if dx > lim:
-        if x1-x2 > 0:
-            dir = 1
-        else:
-            dir = -1
-        print(t,dx)
-        return 1*dir
-
-lim = 0.1
-MX = 0.188349
-def mouse_x2(x1,x2):
-    x = MX*x1
-    if abs(x1-x2) > lim:
-        return x
 
 def mouse_x3(x_val,x1,x2,y1,y2):
     # -80 , 80 , 0 , 1920
@@ -58,26 +44,31 @@ def mouse_x3(x_val,x1,x2,y1,y2):
 def mov_mouse(x,y):
     pyautogui.moveTo(x=x,y=y,duration=0)
 
-
+def get_data(ser):
+    data = ser.readline().decode().strip()
+    if data and d1['enbl']:
+            curr = data_sp(data)
 
 def deNoise(x1,x2,y1,y2):
     # TODO de noising of input
     # increase rate of input
     pass
+
 # TODO use multithredding to speed up , optimize code
+
+# plan 1 
 input_data = []
 
-def read():
-    ser = serial.Serial(comport, baudrate, timeout=0.1)        
+def get_data(ser):
     data = ser.readline().decode().strip()
-    if data:
-        try:
-            data = data.split()
-            data = (f"{float(data[0]):.2f} {float(data[1]):.2f} {data[2]} {data[3]} {data[4]}")
-            with open('inp.txt','a') as f:
-                f.write()
-        except:
-            print(data)
+    if data and d1['enbl']:
+            data = data_sp(data)
+            try:
+                data = [float(x) for x in data]
+                return data
+            except:
+                print(data)
+    return
 
 def main():
     curr = []
@@ -90,18 +81,24 @@ def main():
     keyboard.add_hotkey('*',correct_off_state)
     keyboard.add_hotkey('.',precise_state)
     while d1['loop']:
-        s1 = time.time_ns()
+        #s1 = time.time_ns()
+        #data = get_data(ser)
         data = ser.readline().decode().strip()
+        curr = data_sp(data)
         if data and d1['enbl']:
-            curr = data_sp(data)
             try:
-                x_angle = (curr[0])
-                y_angle = (curr[1])
+                s1 = time.time_ns()
+                #print(data)
+                
+                x_angle = (curr[0])/1.2
+                y_angle = (curr[1])/1.2
+                # print(x_angle,y_angle)
+                if d1['precise']:
+                    x_angle /= 2
+                    y_angle /= 2
                 x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
                 y = (mouse_x3(y_angle,40,-40,0,1080)) - d1['y_off']
-                if d1['precise']:
-                    x /= 2
-                    y /= 2
+                
                 if d1['correct_state']:
                     if temp == 0:
                         d1['x_off'] = x - prev[0]
@@ -122,8 +119,8 @@ def main():
                 s2 = time.time_ns()
                 mov_mouse(x,y)
                 s3 = time.time_ns()
-                print((s2-s1)/1000000,(s3-s2)/1000000,(s3-s1)/1000000)
                 prev = curr
+                print((s2-s1)/1000000,(s3-s2)/1000000,(s3-s1)/1000000)
             except:
                 pass
             #print(time.time_ns()-s1)
@@ -132,6 +129,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
-
-
