@@ -3,13 +3,14 @@ import serial
 import keyboard
 import time
 import threading
-comport = 'COM4'
+comport = 'COM5'
 baudrate = 115200
 
 d1 = {'x_off':10,
         'y_off':-200,
         'correct_state':False,
         'precise':False,
+        'invert_x':True,
         'duration':0.1,
         'enbl':True,
         'loop':True
@@ -59,15 +60,17 @@ def get_data():
     while True:
         tdata = ser.readline().decode().strip()
         if tdata and d1['enbl']:
-            tdata = data_sp(data)
-            try:
-                tdata = [float(x) for x in data]
-                data = data_sp(tdata)
+            try: 
+                tdata = [float(x) for x in tdata.split()]
+                data = tdata
+                print(tdata)
+                
             except:
                 print(data)
 
 
 def main():
+    global data
     x,y = d1['x_off'],d1['y_off']
     curr = []
     prev = []
@@ -79,10 +82,10 @@ def main():
     keyboard.add_hotkey('*',correct_off_state)
     keyboard.add_hotkey('.',precise_state)
     while d1['loop']:
-        s1 = time.time_ns()
+        #s1 = time.time_ns()
         #data = get_data(ser)
-        curr = data_sp(data)
-        if data and d1['enbl']:
+        curr = data
+        if curr and d1['enbl']:
             try:
                 #s1 = time.time_ns()
                 #print(data)
@@ -92,6 +95,8 @@ def main():
                 if d1['precise']:
                     x_angle /= 2
                     y_angle /= 2
+                if d1['invert_x']:
+                    x_angle *= -1
                 x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
                 y = (mouse_x3(y_angle,40,-40,0,1080)) - d1['y_off']
                 
@@ -119,12 +124,11 @@ def main():
                 
                 s3 = time.time_ns()
                 prev = curr
-                print((s2-s1)/1000000,(s3-s2)/1000000,(s3-s1)/1000000)
+                print(time.perf_counter())
             except:
                 pass
 
 data = []
-threading.Thread(target=get_data)
-
-
+data_getter = threading.Thread(target=get_data,daemon=True)
+data_getter.start()
 main()
