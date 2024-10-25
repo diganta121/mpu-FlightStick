@@ -95,13 +95,14 @@ def main():
         if data and d1['enbl']:
             curr = data_sp(data)
             try:
-                x_angle = (curr[0])
-                y_angle = (curr[1])
+                x_angle = (curr[0])/1.2
+                y_angle = (curr[1])/1.2
+                # print(x_angle,y_angle)
+                if d1['precise']:
+                    x_angle /= 2
+                    y_angle /= 2
                 x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
                 y = (mouse_x3(y_angle,40,-40,0,1080)) - d1['y_off']
-                if d1['precise']:
-                    x /= 2
-                    y /= 2
                 if d1['correct_state']:
                     if temp == 0:
                         d1['x_off'] = x - prev[0]

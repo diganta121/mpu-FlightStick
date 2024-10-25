@@ -101,9 +101,16 @@ void loop() {
   curr[0] = angles.x;
   curr[1] = angles.y;
   float diff[2] = {curr[0]-prev[0],curr[1]-prev[1]};
-  Serial.print("%f %f %f",curr[0],curr[1]);
+  Serial.print(curr[0]);
+  Serial.print(" ");
+  Serial.print(curr[1]);
+  Serial.print(" ");
+  Serial.print(diff[0]);
+  Serial.print(" ");
+  Serial.println(diff[1]);
   
-  prev = curr;
+  prev[0] = curr[0];
+  prev[1] = curr[1];
 /* Pitch and roll consider all axes for calculation. According to my experience
    it provides more reliable results at higher angles (>60°) */
   /*

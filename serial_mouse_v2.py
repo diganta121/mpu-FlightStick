@@ -1,10 +1,8 @@
 import pyautogui
 import serial
 import keyboard
-import math
 import time
 import threading
-import Serial_input as _SI
 comport = 'COM4'
 baudrate = 115200
 
@@ -44,10 +42,6 @@ def mouse_x3(x_val,x1,x2,y1,y2):
 def mov_mouse(x,y):
     pyautogui.moveTo(x=x,y=y,duration=0)
 
-def get_data(ser):
-    data = ser.readline().decode().strip()
-    if data and d1['enbl']:
-            curr = data_sp(data)
 
 def deNoise(x1,x2,y1,y2):
     # TODO de noising of input
@@ -59,37 +53,39 @@ def deNoise(x1,x2,y1,y2):
 # plan 1 
 input_data = []
 
-def get_data(ser):
-    data = ser.readline().decode().strip()
-    if data and d1['enbl']:
-            data = data_sp(data)
+def get_data():
+    global data
+    ser = serial.Serial(comport, baudrate,timeout=0.2)
+    while True:
+        tdata = ser.readline().decode().strip()
+        if tdata and d1['enbl']:
+            tdata = data_sp(data)
             try:
-                data = [float(x) for x in data]
-                return data
+                tdata = [float(x) for x in data]
+                data = data_sp(tdata)
             except:
                 print(data)
-    return
+
 
 def main():
+    x,y = d1['x_off'],d1['y_off']
     curr = []
     prev = []
     temp = -1
-    ser = serial.Serial(comport, baudrate,timeout=0.2)         
-    # 1/timeout is the frequency at which the port is read 
+    # 1/timeout is the frequency at which the port is read
+    # move_mouse = threading.Thread(target=mov_mouse, args=(x,y))
     keyboard.add_hotkey('`',disable)
     keyboard.add_hotkey('/',disable_soft)
     keyboard.add_hotkey('*',correct_off_state)
     keyboard.add_hotkey('.',precise_state)
     while d1['loop']:
-        #s1 = time.time_ns()
+        s1 = time.time_ns()
         #data = get_data(ser)
-        data = ser.readline().decode().strip()
         curr = data_sp(data)
         if data and d1['enbl']:
             try:
-                s1 = time.time_ns()
+                #s1 = time.time_ns()
                 #print(data)
-                
                 x_angle = (curr[0])/1.2
                 y_angle = (curr[1])/1.2
                 # print(x_angle,y_angle)
@@ -118,14 +114,17 @@ def main():
                 #print(f"{x:.2f} {y:.2f}")
                 s2 = time.time_ns()
                 mov_mouse(x,y)
+                # move_mouse.join()
+                # move_mouse.start()
+                
                 s3 = time.time_ns()
                 prev = curr
                 print((s2-s1)/1000000,(s3-s2)/1000000,(s3-s1)/1000000)
             except:
                 pass
-            #print(time.time_ns()-s1)
-            
-        
 
-if __name__ == '__main__':
-    main()
+data = []
+threading.Thread(target=get_data)
+
+
+main()
