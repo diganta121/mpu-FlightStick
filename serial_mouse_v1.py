@@ -6,7 +6,7 @@ import time
 import threading
 comport = 'COM5'
 baudrate = 115200
-d1 = {'x_off':10,
+d1 = {'x_off':0,
         'y_off':-200,
         'correct_state':False,
         'precise':False,
@@ -135,7 +135,7 @@ def main():
             pass
             #print(time.time_ns()-s1)
             
-        
+    
 
 if __name__ == '__main__':
     main()

@@ -122,6 +122,6 @@ void loop() {
   Serial.print(roll); 
   Serial.println();
   */
-  delay(60);
+  delay(150);
   
 }

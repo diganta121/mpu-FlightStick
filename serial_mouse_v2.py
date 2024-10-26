@@ -6,7 +6,7 @@ import threading
 comport = 'COM5'
 baudrate = 115200
 
-d1 = {'x_off':10,
+d1 = {'x_off':0,
         'y_off':-200,
         'correct_state':False,
         'precise':False,
@@ -41,7 +41,8 @@ def mouse_x3(x_val,x1,x2,y1,y2):
     return y1 + (x_val - x1) * (y2 - y1) / (x2 - x1)
 
 def mov_mouse(x,y):
-    pyautogui.moveTo(x=x,y=y,duration=0)
+    if d1['enbl']:
+        pyautogui.moveTo(x=x,y=y,duration=0)
 
 
 def deNoise(x1,x2,y1,y2):
@@ -82,7 +83,7 @@ def main():
     keyboard.add_hotkey('*',correct_off_state)
     keyboard.add_hotkey('.',precise_state)
     while d1['loop']:
-        #s1 = time.time_ns()
+        s1 = time.time_ns()
         #data = get_data(ser)
         curr = data
         if curr and d1['enbl']:
@@ -117,14 +118,14 @@ def main():
                         temp -= 1
                         continue
                 #print(f"{x:.2f} {y:.2f}")
-                s2 = time.time_ns()
+                
                 mov_mouse(x,y)
                 # move_mouse.join()
                 # move_mouse.start()
                 
                 s3 = time.time_ns()
                 prev = curr
-                print(time.perf_counter())
+                print(s3-s1)
             except:
                 pass
 

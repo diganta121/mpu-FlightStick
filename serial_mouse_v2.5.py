@@ -4,9 +4,10 @@ import keyboard
 import time
 import threading
 import multiprocessing
+from sys import exit
 comport = 'COM5'
 baudrate = 115200
-d1 = {'x_off':10,
+d1 = {'x_off':00,
         'y_off':-200,
         'correct_state':False,
         'precise':False,
@@ -18,6 +19,7 @@ d1 = {'x_off':10,
 
 def disable(*_):
     d1['loop'] = False
+    exit()
 
 def disable_soft(*_):
     d1['enbl'] = not d1['enbl']
@@ -41,7 +43,8 @@ def mouse_x3(x_val,x1,x2,y1,y2):
     return y1 + (x_val - x1) * (y2 - y1) / (x2 - x1)
 
 def mov_mouse(x,y):
-    pyautogui.moveTo(x=x,y=y,duration=0)
+    if d1['enbl']:
+        pyautogui.moveTo(x=x,y=y,duration=0)
 
 
 def deNoise(x1,x2,y1,y2):
@@ -56,6 +59,7 @@ input_data = []
 
 def get_data():
     ser = serial.Serial(comport, baudrate,timeout=0.2)
+    keyboard.add_hotkey('`',disable)
     while d1['loop']:
         tdata = ser.readline().decode().strip()
         if tdata and d1['enbl']:
@@ -68,18 +72,26 @@ def get_data():
                 print(tdata)
 
 def read_data():
-    with open('f.txt','r') as f:
-        a = list(eval(f.read())[1:-1])
-    return a
+    try:
+        with open('f.txt','r') as f:
+            a = list(eval(f.read())[1:-1])
+        return a
+    except:
+        return
 def main():
+    keyboard.add_hotkey('`',disable)
+    keyboard.add_hotkey('/',disable_soft)
+    keyboard.add_hotkey('*',correct_off_state)
+    keyboard.add_hotkey('.',precise_state)
     x,y = d1['x_off'],d1['y_off']
     curr = []
     prev = []
     temp = -1
-    print('main thread')
     # 1/timeout is the frequency at which the port is read
     # move_mouse = threading.Thread(target=mov_mouse, args=(x,y))
     while d1['loop']:
+        print('main thread')
+
         #s1 = time.time_ns()
         #data = get_data(ser)
         curr = read_data()
