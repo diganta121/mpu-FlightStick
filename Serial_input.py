@@ -31,4 +31,4 @@ def read_serial(comport, baudrate):
 
 if __name__ == '__main__':
 
-    read_serialinf('COM4', 115200)
+    read_serialinf('COM5', 115200)

@@ -42,22 +42,30 @@ def mouse_x3(x_val,x1,x2,y1,y2):
     # -80 , 80 , 0 , 1920
     return y1 + (x_val - x1) * (y2 - y1) / (x2 - x1)
 
-def mov_mouse(x,y):
+
+# pyautogui.PAUSE = 0.001
+def mov_mouse(x,y,x1,y1):
     if d1['enbl']:
-        pyautogui.moveTo(x=x,y=y,duration=0)
-        pyautogui.PAUSE = 0.05
-        # time.sleep(0.05)
+        if abs(x-x1)>d1['min_diff'] or abs(y-y1)>d1['min_diff']:
+            pyautogui.moveTo(x=x,y=y,duration=0)
+            pyautogui.PAUSE = 0.05
 
+def Nsteps(start, end,n):
+    step = (end - start) / (n-1)
+    return [start + i * step for i in range(n)]
 
-def deNoise(x1,x2,y1,y2):
-    # TODO de noising of input
-    pass
+def deNoise(curr,prev,n):
+    inter_points = []
+    if len(prev) > 2:
+        for i in range(2):
+            t = Nsteps(prev[i],curr[i],n)
+            inter_points.append(t)
+    return inter_points
 
 
 # TODO predict next movement to make it smoother 
 # and reduce the sens if the diff between the prev and curr is very less
 
-input_data = []
 
 def get_data():
     global data
@@ -70,7 +78,7 @@ def get_data():
                 data = tdata
                 print(tdata)
             except:
-                print(tdata)
+                print(data)
 
 
 def main():
@@ -78,6 +86,8 @@ def main():
     x,y = d1['x_off'],d1['y_off']
     curr = []
     prev = []
+    curr_pos = []
+    prev_pos = []
     temp = -1
     # 1/timeout is the frequency at which the port is read
     # move_mouse = threading.Thread(target=mov_mouse, args=(x,y))
@@ -90,7 +100,7 @@ def main():
         curr = data
         if curr and d1['enbl']:
             try:
-                
+                curr_pos = [((mouse_x3((curr[0])/1.2,65,-60,0,1920)) - d1['x_off']),((mouse_x3((curr[1])/1.2,40,-40,0,1080)) - d1['y_off'])]
                 s1 = time.time_ns()
                 #print(data)
                 x_angle = (curr[0])/1.2
@@ -102,7 +112,7 @@ def main():
                 if d1['invert_x']:
                     x_angle *= -1
                 x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
-                y = (mouse_x3(y_angle,40,-40,0,1080)) - d1['y_off']
+                y = (mouse_x3(y_angle,45,-45,0,1080)) - d1['x_off']
                 
                 if d1['correct_state']:
                     if temp == 0:
@@ -121,20 +131,24 @@ def main():
                         temp -= 1
                         continue
                 #print(f"{x:.2f} {y:.2f}")
-                
-                if abs(curr[2])>d1['min_diff'] or abs(curr[3])>d1['min_diff']:
-                    mov_mouse(x,y)
+                s2 = time.time_ns()
+                inter_p = deNoise(curr_pos, prev_pos,5)
+                print('dl',inter_p)
+                for i in range(len(inter_p[0])):
+                    mov_mouse(inter_p[0][i],inter_p[1][i],prev[0],prev[1])
                 else:
                     time.sleep(0.04)
                 s3 = time.time_ns()
-                
+                print(s3-s1)
                 # move_mouse.join()
                 # move_mouse.start()
                 
                 prev = curr
+                prev_pos = curr_pos
             except:
-                pass
-            print(s3-s1)
+                prev = curr
+                prev_pos = curr_pos
+                
 
 data = []
 data_getter = threading.Thread(target=get_data,daemon=True)

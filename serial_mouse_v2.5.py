@@ -7,6 +7,8 @@ import multiprocessing
 from sys import exit
 comport = 'COM5'
 baudrate = 115200
+
+pyautogui.PAUSE = 0.01
 d1 = {'x_off':00,
         'y_off':-200,
         'correct_state':False,
@@ -74,10 +76,12 @@ def get_data():
 def read_data():
     try:
         with open('f.txt','r') as f:
-            a = list(eval(f.read())[1:-1])
+            a = list(eval(f.read()[1:-1]))
+            print('inp',a)
         return a
     except:
         return
+    
 def main():
     keyboard.add_hotkey('`',disable)
     keyboard.add_hotkey('/',disable_soft)
