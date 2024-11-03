@@ -67,7 +67,7 @@ def get_data():
         if tdata and d1['enbl']:
             try: 
                 tdata = [float(x) for x in tdata.split()]
-                print(tdata)
+                # print(tdata)
                 with open('f.txt','w') as f:
                     f.write(str(tdata))
             except:
@@ -77,7 +77,7 @@ def read_data():
     try:
         with open('f.txt','r') as f:
             a = list(eval(f.read()[1:-1]))
-            print('inp',a)
+            # print('inp',a)
         return a
     except:
         return
@@ -94,7 +94,7 @@ def main():
     # 1/timeout is the frequency at which the port is read
     # move_mouse = threading.Thread(target=mov_mouse, args=(x,y))
     while d1['loop']:
-        print('main thread')
+        # print('main thread')
 
         #s1 = time.time_ns()
         #data = get_data(ser)
@@ -121,7 +121,7 @@ def main():
                         prev.clear()
                         temp = -1
                         d1['correct_state'] = False
-                        print(d1)
+                        # print(d1)
                     elif temp == -1:
                         prev = [x, y]
                         temp = 10
@@ -138,7 +138,7 @@ def main():
                 
                 s3 = time.time_ns()
                 prev = curr
-                print(time.perf_counter())
+                # print(time.perf_counter())
             except:
                 pass
 

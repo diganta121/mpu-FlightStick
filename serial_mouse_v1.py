@@ -90,6 +90,7 @@ def main():
     keyboard.add_hotkey('/',disable_soft)
     keyboard.add_hotkey('*',correct_off_state)
     keyboard.add_hotkey('.',precise_state)
+    pyautogui.PAUSE = 0.001
     while d1['loop']:
         # s1 = time.time_ns()
         try:
@@ -129,7 +130,7 @@ def main():
                 mov_mouse(x,y)
                 # s3 = time.time_ns()
                 # print((s2-s1)/1000000,(s3-s2)/1000000,(s3-s1)/1000000)
-                print(time.perf_counter())
+                #print(time.perf_counter())
                 prev = curr
         except:
             pass

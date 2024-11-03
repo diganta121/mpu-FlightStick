@@ -68,7 +68,7 @@ def get_data():
             try: 
                 tdata = [float(x) for x in tdata.split()]
                 data = tdata
-                print(tdata)
+                # print(tdata)
             except:
                 print(tdata)
 
@@ -134,7 +134,7 @@ def main():
                 prev = curr
             except:
                 pass
-            print(s3-s1)
+            # print(s3-s1)
 
 data = []
 data_getter = threading.Thread(target=get_data,daemon=True)

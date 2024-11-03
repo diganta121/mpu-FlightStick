@@ -100,11 +100,10 @@ def main():
         curr = data
         if curr and d1['enbl']:
             try:
-                curr_pos = [((mouse_x3((curr[0])/1.2,65,-60,0,1920)) - d1['x_off']),((mouse_x3((curr[1])/1.2,40,-40,0,1080)) - d1['y_off'])]
-                s1 = time.time_ns()
-                #print(data)
                 x_angle = (curr[0])/1.2
                 y_angle = (curr[1])/1.2
+                s1 = time.time_ns()
+                #print(data)
                 # print(x_angle,y_angle)
                 if d1['precise']:
                     x_angle /= 2
@@ -113,6 +112,7 @@ def main():
                     x_angle *= -1
                 x = (mouse_x3(x_angle,65,-60,0,1920)) - d1['x_off']
                 y = (mouse_x3(y_angle,45,-45,0,1080)) - d1['x_off']
+                curr_pos = [x,y]
                 
                 if d1['correct_state']:
                     if temp == 0:
