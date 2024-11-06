@@ -61,7 +61,7 @@ void setup() {
    */
   myMPU9250.enableFifo(false);
 
-  myMPU9250.setSampleRateDivider(50);
+  myMPU9250.setSampleRateDivider(5);
 
   /*  MPU9250_ACC_RANGE_2G      2 g    (default)
    *  MPU9250_ACC_RANGE_4G      4 g
@@ -92,18 +92,16 @@ void setup() {
 
 float curr[2];
 float prev[2] = {0.0,0.0};
-float prev2[2] = {0.0,0.0};
 unsigned long tim = millis();
 void loop() {
   xyzFloat angles = myMPU9250.getAngles();
   
-/* This method provides quite precise values for x/y 
+  /* This method provides quite precise values for x/y 
    angles up 60°. */
   //Serial.print(" x ");Serial.print(" y ");Serial.print(" z ");Serial.print(" Pitch");Serial.println(" Roll");
   curr[0] = angles.x;
   curr[1] = angles.y;
   float diff[2] = {curr[0]-prev[0],curr[1]-prev[1]};
-  float diff2[2] = {curr[0]-prev2[0],curr[1]-prev2[1]};
 
   Serial.print(curr[0]);
   Serial.print(" ");
@@ -112,20 +110,12 @@ void loop() {
   Serial.print(diff[0]);
   Serial.print(" ");
   Serial.print(diff[1]);
-  Serial.print(" ");
-  Serial.print(diff2[0]);
-  Serial.print(" ");
-  Serial.print(diff2[1]);
-  Serial.print(" ");
   tim = millis();
   Serial.println(tim);
-
 
   prev[0] = curr[0];
   prev[1] = curr[1];
 
-  prev2[0] = prev[0];
-  prev2[1] = prev[1];
 
   /* 
   Pitch and roll consider all axes for calculation. According to my experience
