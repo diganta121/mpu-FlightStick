@@ -1,13 +1,12 @@
 import pyautogui
 import serial
 import keyboard
-import math
 import time
 import threading
 comport = 'COM5'
 baudrate = 115200
 d1 = {'x_off':0,
-        'y_off':-200,
+        'y_off':-100,
         'correct_state':False,
         'precise':False,
         'invert_x':True,
@@ -57,7 +56,7 @@ def mouse_x3(x_val,x1,x2,y1,y2):
     return y1 + (x_val - x1) * (y2 - y1) / (x2 - x1)
 
 def mov_mouse(x,y):
-    pyautogui.moveTo(x=x,y=y,duration=0)
+    pyautogui.moveTo(x=x,y=y,duration=0.1)
 
 
 
@@ -135,10 +134,7 @@ def main():
         except:
             pass
             #print(time.time_ns()-s1)
-            
-    
-
 main()
-    
+
 
 

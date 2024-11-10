@@ -87,7 +87,7 @@ void setup() {
    *     6             5              66.96           1
    *     7           460               1.94           1
    */
-  myMPU9250.setAccDLPF(MPU9250_DLPF_6);  
+  myMPU9250.setAccDLPF(MPU9250_DLPF_5);  
 }
 
 float curr[2];
@@ -109,10 +109,9 @@ void loop() {
   Serial.print(" ");
   Serial.print(diff[0]);
   Serial.print(" ");
-  Serial.print(diff[1]);
-  tim = millis();
-  Serial.println(tim);
-
+  Serial.println(diff[1]);
+  // tim = millis();
+  // Serial.println(tim);
   prev[0] = curr[0];
   prev[1] = curr[1];
 
